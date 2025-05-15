@@ -1,0 +1,46 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+  BINARY_NAME: test-insights
+  DOCKER_IMAGE: test-insights:latest
+
+tasks:
+  default:
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+
+  build:
+    desc: Build the Go application
+    cmds:
+      - go build -o bin/{{.BINARY_NAME}} ./cmd/server
+    sources:
+      - cmd/**/*.go
+      - internal/**/*.go
+    generates:
+      - bin/{{.BINARY_NAME}}
+
+  run:
+    desc: Run the Go application
+    cmds:
+      - go run ./cmd/server
+
+  lint:
+    desc: Lint the Go code using go vet, staticcheck, and golangci-lint
+    cmds:
+      - go vet ./...
+      - staticcheck ./...
+      - golangci-lint run ./...
+    preconditions:
+      - sh: command -v staticcheck
+        msg: "Please install staticcheck: https://staticcheck.io/docs/getting-started/"
+      - sh: command -v golangci-lint
+        msg: "Please install golangci-lint: https://golangci-lint.run/usage/install/"
+
+  docker-build:
+    desc: Build Docker image
+    cmds:
+      - docker build -t {{.DOCKER_IMAGE}} .

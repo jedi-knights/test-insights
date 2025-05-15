@@ -1,0 +1,31 @@
+# Go build artifacts
+bin/
+*.exe
+*.test
+*.out
+
+# Vendor directory (if not using `go mod vendor`)
+vendor/
+
+# Git
+.git
+.gitignore
+
+# Dependency management
+go.sum
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Editor/IDE config
+*.swp
+*.swo
+*.DS_Store
+*.idea/
+.vscode/
+
+# Task and local tools
+task.log
+Taskfile.yaml
+Taskfile.yml
