@@ -58,9 +58,10 @@ services:
         condition: service_healthy   # wait for API readiness before starting web
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      HOSTNAME: "0.0.0.0"   # bind Next.js standalone server to all interfaces
     healthcheck:
       # node:20-alpine includes busybox wget
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000 || exit 1"]
+      test: ["CMD-SHELL", "wget -qO /dev/null http://127.0.0.1:3000 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
