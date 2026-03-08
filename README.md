@@ -1,5 +1,7 @@
 # Test Insights
 
+[![CI](https://github.com/jedi-knights/test-insights/actions/workflows/ci.yml/badge.svg)](https://github.com/jedi-knights/test-insights/actions/workflows/ci.yml)
+
 > Track, visualize, and trend test results across every CI/build system in one place.
 
 Test Insights is an open-source, self-hosted platform for aggregating test results from any CI pipeline. It provides a hierarchical view of your quality data — **Team → Project → Test Suite → Test Run → Test Case** — with pass-rate trends, duration analytics, and a CLI for pushing results from any build system.
