@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { getTeam, getTeamMetrics } from "@/lib/api/teams";
@@ -10,11 +11,11 @@ import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function TeamDetailPage({ params }: Props) {
-  const { id } = params;
+  const { id } = use(params);
   const { data: team, isLoading: teamLoading } = useQuery({
     queryKey: ["team", id],
     queryFn: () => getTeam(id),

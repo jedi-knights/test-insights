@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { getSuite, getSuiteMetrics } from "@/lib/api/suites";
@@ -13,11 +14,11 @@ import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function SuiteDetailPage({ params }: Props) {
-  const { id } = params;
+  const { id } = use(params);
   const { data: suite, isLoading } = useQuery({
     queryKey: ["suite", id],
     queryFn: () => getSuite(id),
