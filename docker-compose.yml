@@ -55,7 +55,7 @@ services:
       - "3000:3000"
     depends_on:
       api:
-        condition: service_healthy   # wait for API readiness before starting web
+        condition: service_started   # web serves static files; no API call at boot
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
       HOSTNAME: "0.0.0.0"   # bind Next.js standalone server to all interfaces
@@ -66,7 +66,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 15s
-      start_interval: 3s   # probe every 3s during start_period (Docker 25+)
+      start_interval: 1s   # Next.js starts in <100ms; probe quickly
 
 volumes:
   postgres_data:
