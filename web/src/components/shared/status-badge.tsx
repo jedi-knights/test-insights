@@ -11,5 +11,5 @@ const STATUS_VARIANTS: Record<string, "success" | "destructive" | "secondary" | 
 
 export function StatusBadge({ status }: { status: RunStatus | CaseStatus | string }) {
   const variant = STATUS_VARIANTS[status] ?? "outline";
-  return <Badge variant={variant as any}>{status}</Badge>;
+  return <Badge variant={variant}>{status}</Badge>;
 }
