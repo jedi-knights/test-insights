@@ -9,9 +9,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-testinsights}"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
+      start_period: 10s
+      start_interval: 2s   # poll every 2s during start_period (Docker 25+)
 
   api:
     build:
@@ -30,6 +32,18 @@ services:
       ALGORITHM: ${ALGORITHM:-HS256}
     command: >
       sh -c "alembic upgrade head && uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload"
+    healthcheck:
+      # Uses Python's built-in urllib — no curl/wget needed in python:3.13-slim
+      test:
+        - "CMD"
+        - "python"
+        - "-c"
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health', timeout=2)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s    # covers alembic migration + uvicorn boot time
+      start_interval: 3s   # probe every 3s during start_period (Docker 25+)
 
   web:
     build:
@@ -40,9 +54,18 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - api
+      api:
+        condition: service_healthy   # wait for API readiness before starting web
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    healthcheck:
+      # node:20-alpine includes busybox wget
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+      start_interval: 3s   # probe every 3s during start_period (Docker 25+)
 
 volumes:
   postgres_data:
