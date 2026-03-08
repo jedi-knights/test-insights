@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── API ──────────────────────────────────────────────────────────────────
+  api:
+    name: API
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: |
+          uv pip install --system -e .
+          uv pip install --system pytest pytest-asyncio httpx
+
+      - name: Validate app import
+        env:
+          DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test
+          SECRET_KEY: ci-secret-key
+        run: python -c "from api.main import app; print('App loaded OK')"
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test
+          SECRET_KEY: ci-secret-key
+        # Exit code 5 = no tests collected; treat as passing until tests are added
+        run: pytest --tb=short -q; code=$?; [ $code -eq 0 ] || [ $code -eq 5 ]
+
+  # ── CLI ──────────────────────────────────────────────────────────────────
+  cli:
+    name: CLI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cli
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install CLI
+        run: uv pip install --system -e .
+
+      - name: Verify entry point
+        run: ti --help
+
+  # ── Web ──────────────────────────────────────────────────────────────────
+  web:
+    name: Web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+        run: pnpm build
