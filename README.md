@@ -195,6 +195,8 @@ cd cli
 uv pip install -e .
 ```
 
+> See [`cli/README.md`](cli/README.md) for full CLI documentation including configuration, initial setup, and all commands.
+
 ### Authentication
 
 ```bash
@@ -278,6 +280,8 @@ The web dashboard provides:
 - **Run detail** — full test case list with status badges and error messages
 
 Authentication uses `localStorage`-persisted JWT with automatic token refresh on 401 responses.
+
+> See [`web/README.md`](web/README.md) for full web documentation including configuration and setup.
 
 ---
 
