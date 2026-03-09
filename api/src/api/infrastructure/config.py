@@ -10,5 +10,9 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7
 
+    admin_email: str = "admin@example.com"
+    admin_password: str = "changeme"
+    admin_full_name: str = "Admin"
+
 
 settings = Settings()
