@@ -184,6 +184,8 @@ Authorization: Bearer <access_token>
 
 Full interactive docs available at `http://localhost:8000/docs`.
 
+> See [`api/README.md`](api/README.md) for full API documentation including architecture, configuration, and all endpoints.
+
 ---
 
 ## CLI
